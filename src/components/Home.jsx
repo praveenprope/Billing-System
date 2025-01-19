@@ -3,7 +3,7 @@ import { FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center py-12  bg-cover bg-center perspective">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center py-12 bg-cover bg-center perspective">
       <div className="text-center mb-12 animate-slide-up">
         <h1 className="text-6xl font-bold mb-6 transform hover:rotate-3 hover:scale-105 transition duration-500">
           Welcome to the Billing System
@@ -22,10 +22,10 @@ const Home = () => {
         </a>
         <a
           href="/create-account"
-          className="group flex items-center gap-3 px-8 py-4 border-2 border-white text-white font-semibold rounded-lg shadow-2xl transition duration-500 transform hover:scale-110 hover:bg-white hover:text-black animate-glow-pulse"
+          className="group flex items-center gap-3 px-8 py-4 border-2 border-white text-white font-semibold rounded-lg transition duration-500 transform hover:scale-110"
         >
-          <FaUserPlus className="text-xl group-hover:-rotate-12 transition duration-500" />
-          <span className="group-hover:text-black">Create Account</span>
+          <FaUserPlus className="text-xl transition duration-500" />
+          <span>Create Account</span>
         </a>
       </div>
     </div>

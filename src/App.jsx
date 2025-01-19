@@ -40,7 +40,7 @@ const App = () => {
   const handleLogout = () => {
     setUser(null); // Clear the user state
     localStorage.removeItem('loggedInUser'); // Remove the user from localStorage
-    navigate("/"); // Redirect to Home page after logout
+    navigate("/Login"); // Redirect to Home page after logout
   };
 
   return (

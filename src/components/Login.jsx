@@ -32,7 +32,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 to-black text-white flex items-center justify-center">
-      <div className="w-full max-w-md border border-gray-700 rounded-lg p-8 transform transition-all duration-700 hover:scale-105 hover:bg-gray-800 shadow-xl animate__animated animate__zoomIn animate__delay-1s">
+      <div className="w-full max-w-md border border-gray-700 rounded-lg p-8 bg-gray-800 shadow-xl animate__animated animate__zoomIn animate__delay-1s">
         <h2 className="text-4xl font-extrabold text-center text-white mb-6 animate__animated animate__fadeIn animate__delay-1s">
           Login
         </h2>
@@ -46,7 +46,7 @@ const Login = ({ onLogin }) => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 bg-transparent text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300 ease-in-out transform hover:scale-105"
+                className="w-full px-4 py-2 bg-transparent text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
                 autoComplete="email"
               />
             </div>
@@ -60,26 +60,26 @@ const Login = ({ onLogin }) => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-transparent text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300 ease-in-out transform hover:scale-105"
+                className="w-full px-4 py-2 bg-transparent text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
                 autoComplete="current-password"
               />
             </div>
             <button
               type="button"
               onClick={handleTogglePasswordVisibility}
-              className="ml-2 bg-gray-700 text-white p-2 rounded-md hover:bg-gray-600 transition-all duration-300 transform hover:scale-110"
+              className="ml-2 bg-gray-700 text-white p-2 rounded-md"
             >
               {passwordVisible ? (
-                <AiFillEyeInvisible className="text-2xl animate__animated animate__flipInX animate__delay-2s" />
+                <AiFillEyeInvisible className="text-2xl" />
               ) : (
-                <AiFillEye className="text-2xl animate__animated animate__flipInX animate__delay-2s" />
+                <AiFillEye className="text-2xl" />
               )}
             </button>
           </div>
 
           <button
             onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:scale-110 transition-all duration-500 transform hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-400 animate__animated animate__pulse animate__delay-3s"
+            className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg"
           >
             Login
           </button>

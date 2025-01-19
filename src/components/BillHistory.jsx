@@ -24,6 +24,19 @@ const BillHistory = () => {
     setExpandedBillIndex(expandedBillIndex === index ? null : index); // Toggle dropdown visibility
   };
 
+  const deleteBill = (index) => {
+    const updatedBills = bills.filter((_, i) => i !== index); // Remove the selected bill
+    setBills(updatedBills);
+
+    // Update the localStorage data
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const accountIndex = users.findIndex((user) => user.email === "p@gmail.com");
+    if (accountIndex !== -1) {
+      users[accountIndex].bills = updatedBills;
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+  };
+
   return (
     <div className="bg-gray-900 text-white min-h-screen py-8 px-4">
       <div className="max-w-screen-xl mx-auto">
@@ -64,12 +77,18 @@ const BillHistory = () => {
                         ))}
                       </ul>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-6 py-3 flex gap-2">
                       <button
                         onClick={() => toggleCartDetails(index)}
                         className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600"
                       >
                         {expandedBillIndex === index ? "Hide Cart" : "Show Cart"}
+                      </button>
+                      <button
+                        onClick={() => deleteBill(index)}
+                        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
+                      >
+                        Delete
                       </button>
                     </td>
                   </tr>
