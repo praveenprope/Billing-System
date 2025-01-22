@@ -30,6 +30,11 @@ const Login = ({ onLogin }) => {
     setPasswordVisible(!passwordVisible);
   };
 
+  // Navigate to the homepage
+  const goToHomepage = () => {
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 to-black text-white flex items-center justify-center">
       <div className="w-full max-w-md border border-gray-700 rounded-lg p-8 bg-gray-800 shadow-xl animate__animated animate__zoomIn animate__delay-1s">
@@ -79,9 +84,17 @@ const Login = ({ onLogin }) => {
 
           <button
             onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg"
+            className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg mb-4"
           >
             Login
+          </button>
+
+          {/* Go to Homepage Button */}
+          <button
+            onClick={goToHomepage}
+            className="w-full bg-gradient-to-r from-purple-400 to-pink-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg"
+          >
+            Go to Homepage
           </button>
         </form>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { saveToLocalStorage } from '../utils/localStorageUtils';
+import { saveToLocalStorage } from '../utils/localStorageUtils'; // Correct import
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import 'animate.css';
 

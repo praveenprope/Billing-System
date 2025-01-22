@@ -1,5 +1,24 @@
 import { useState } from "react";
 
+// Initialize localStorage with a default user
+const initializeLocalStorage = () => {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const defaultUser = {
+    email: "p@gmail.com",
+    shopName: "Your Shop",
+    bills: [],
+  };
+
+  // Check if the user already exists
+  if (!users.find((user) => user.email === "p@gmail.com")) {
+    users.push(defaultUser);
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+};
+
+// Call this function when the app loads
+initializeLocalStorage();
+
 const BillingSystem = ({ shopName }) => {
   const [product, setProduct] = useState("");
   const [pricePerKg, setPricePerKg] = useState("");
@@ -10,6 +29,7 @@ const BillingSystem = ({ shopName }) => {
   const [customerName, setCustomerName] = useState("");
   const [customerNumber, setCustomerNumber] = useState("");
 
+  // Add items to the cart
   const addToCart = () => {
     if (!product || (!pricePerKg && !pricePerQuantity) || !quantityWithUnit) {
       alert("Please enter valid product details.");
@@ -17,34 +37,46 @@ const BillingSystem = ({ shopName }) => {
     }
 
     let totalPrice = 0;
-    if (quantityWithUnit.toLowerCase().includes("kg")) {
-      const quantity = parseFloat(quantityWithUnit) || 0;
-      totalPrice = parseFloat(pricePerKg) * quantity;
-    } else if (quantityWithUnit.toLowerCase().includes("g")) {
-      const quantity = parseFloat(quantityWithUnit) / 1000 || 0;
-      totalPrice = parseFloat(pricePerKg) * quantity;
-    } else {
+    if (pricePerKg) {
+      // Calculate total price based on price per kg
+      if (quantityWithUnit.toLowerCase().includes("kg")) {
+        const quantity = parseFloat(quantityWithUnit) || 0;
+        totalPrice = parseFloat(pricePerKg) * quantity;
+      } else if (quantityWithUnit.toLowerCase().includes("g")) {
+        const quantity = parseFloat(quantityWithUnit) / 1000 || 0;
+        totalPrice = parseFloat(pricePerKg) * quantity;
+      } else {
+        alert("Please enter quantity in Kg or G for price per Kg.");
+        return;
+      }
+    } else if (pricePerQuantity) {
+      // Calculate total price based on price per quantity
       const quantity = parseFloat(quantityWithUnit) || 0;
       totalPrice = parseFloat(pricePerQuantity) * quantity;
+    } else {
+      alert("Please enter either Price per Kg or Price per Quantity.");
+      return;
     }
 
     const newItem = {
       product,
-      pricePerKg: parseFloat(pricePerKg),
-      pricePerQuantity: parseFloat(pricePerQuantity),
+      pricePerKg: pricePerKg ? parseFloat(pricePerKg) : 0, // Ensure it's a number
+      pricePerQuantity: pricePerQuantity ? parseFloat(pricePerQuantity) : 0, // Ensure it's a number
       quantityWithUnit,
-      totalPrice,
+      totalPrice, // Ensure it's a number
     };
 
     setCartItems((prevItems) => [...prevItems, newItem]);
     setTotalAmount((prevTotal) => prevTotal + totalPrice);
 
+    // Clear input fields
     setProduct("");
     setPricePerKg("");
     setPricePerQuantity("");
     setQuantityWithUnit("");
   };
 
+  // Delete an item from the cart
   const deleteCartItem = (index) => {
     const newCartItems = [...cartItems];
     const itemToRemove = newCartItems.splice(index, 1);
@@ -52,6 +84,7 @@ const BillingSystem = ({ shopName }) => {
     setTotalAmount((prevTotal) => prevTotal - itemToRemove[0].totalPrice);
   };
 
+  // Save the bill to localStorage
   const saveBill = () => {
     if (!customerName || !customerNumber || cartItems.length === 0) {
       alert("Please fill out all fields and add items to the cart.");
@@ -66,20 +99,31 @@ const BillingSystem = ({ shopName }) => {
       date: new Date().toLocaleString(),
     };
 
+    // Fetch users from localStorage
     const users = JSON.parse(localStorage.getItem("users")) || [];
-    const userIndex = users.findIndex((user) => user.email === "p@gmail.com");
+    const loggedInUserEmail = "p@gmail.com"; // Replace with the logged-in user's email
+    const userIndex = users.findIndex((user) => user.email === loggedInUserEmail);
 
     if (userIndex !== -1) {
+      // User exists, update their bills
       const user = users[userIndex];
-      user.bills = user.bills || [];
-      user.bills.push(bill);
-      users[userIndex] = user;
-
-      localStorage.setItem("users", JSON.stringify(users));
-      alert("Bill saved successfully!");
+      user.bills = user.bills || []; // Ensure bills array exists
+      user.bills.push(bill); // Add the new bill
+      users[userIndex] = user; // Update the user data
     } else {
-      console.error("User not found.");
+      // User does not exist, create a new user
+      const newUser = {
+        email: loggedInUserEmail,
+        shopName: "Your Shop",
+        bills: [bill],
+      };
+      users.push(newUser);
     }
+
+    // Save updated users back to localStorage
+    localStorage.setItem("users", JSON.stringify(users));
+    console.log("Bill saved successfully:", bill); // Debugging
+    alert("Bill saved successfully!");
 
     // Clear cart and reset state
     setCartItems([]);
@@ -95,6 +139,7 @@ const BillingSystem = ({ shopName }) => {
           {shopName ? `Welcome to ${shopName}` : "General Store Billing System"}
         </h1>
 
+        {/* Customer Details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           <div>
             <label htmlFor="customerName" className="block text-lg font-medium mb-2">
@@ -125,7 +170,7 @@ const BillingSystem = ({ shopName }) => {
           </div>
         </div>
 
-        {/* Product form */}
+        {/* Product Form */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           <div>
             <label htmlFor="productName" className="block text-lg font-medium mb-2">
@@ -149,7 +194,10 @@ const BillingSystem = ({ shopName }) => {
               type="number"
               id="productPricePerKg"
               value={pricePerKg}
-              onChange={(e) => setPricePerKg(e.target.value)}
+              onChange={(e) => {
+                setPricePerKg(e.target.value);
+                setPricePerQuantity(""); // Clear price per quantity if price per kg is entered
+              }}
               placeholder="Enter price per Kg"
               className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -163,7 +211,10 @@ const BillingSystem = ({ shopName }) => {
               type="number"
               id="productPricePerQuantity"
               value={pricePerQuantity}
-              onChange={(e) => setPricePerQuantity(e.target.value)}
+              onChange={(e) => {
+                setPricePerQuantity(e.target.value);
+                setPricePerKg(""); // Clear price per kg if price per quantity is entered
+              }}
               placeholder="Enter price per quantity"
               className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -184,6 +235,7 @@ const BillingSystem = ({ shopName }) => {
           </div>
         </div>
 
+        {/* Add to Cart Button */}
         <div className="mb-6">
           <button
             onClick={addToCart}
@@ -193,6 +245,7 @@ const BillingSystem = ({ shopName }) => {
           </button>
         </div>
 
+        {/* Cart Items */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold">Cart</h2>
           <ul>
@@ -214,6 +267,7 @@ const BillingSystem = ({ shopName }) => {
           </ul>
         </div>
 
+        {/* Total Amount and Save Bill Button */}
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-lg font-semibold">Total Amount: ₹{totalAmount.toFixed(2)}</h3>
           <button

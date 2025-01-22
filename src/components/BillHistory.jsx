@@ -1,40 +1,67 @@
 import { useState, useEffect } from "react";
+import { generatePDF } from "../utils/generatePDF"; // Import the generatePDF utility
 
 const BillHistory = () => {
   const [bills, setBills] = useState([]);
-  const [shopName, setShopName] = useState(""); // Store shop name
+  const [shopName, setShopName] = useState("");
   const [expandedBillIndex, setExpandedBillIndex] = useState(null);
 
+  // Fetch bills for the logged-in user
   useEffect(() => {
-    // Fetch users from localStorage
     const users = JSON.parse(localStorage.getItem("users")) || [];
-    
-    // Find the user by email
-    const accountData = users.find((user) => user.email === "p@gmail.com");
+    const loggedInUserEmail = "p@gmail.com"; // Replace with the logged-in user's email
+    const accountData = users.find((user) => user.email === loggedInUserEmail);
 
     if (accountData) {
-      setBills(accountData.bills || []); // Set bills if present
-      setShopName(accountData.shopName || ""); // Set the shop name from the logged-in user
+      setBills(accountData.bills || []);
+      setShopName(accountData.shopName || "");
     } else {
       console.error("No user found with email p@gmail.com.");
     }
   }, []);
 
+  // Toggle cart details visibility
   const toggleCartDetails = (index) => {
-    setExpandedBillIndex(expandedBillIndex === index ? null : index); // Toggle dropdown visibility
+    setExpandedBillIndex(expandedBillIndex === index ? null : index);
   };
 
+  // Delete a bill
   const deleteBill = (index) => {
-    const updatedBills = bills.filter((_, i) => i !== index); // Remove the selected bill
+    const updatedBills = bills.filter((_, i) => i !== index);
     setBills(updatedBills);
 
-    // Update the localStorage data
+    // Update localStorage
     const users = JSON.parse(localStorage.getItem("users")) || [];
-    const accountIndex = users.findIndex((user) => user.email === "p@gmail.com");
+    const loggedInUserEmail = "p@gmail.com"; // Replace with the logged-in user's email
+    const accountIndex = users.findIndex((user) => user.email === loggedInUserEmail);
     if (accountIndex !== -1) {
       users[accountIndex].bills = updatedBills;
       localStorage.setItem("users", JSON.stringify(users));
     }
+  };
+
+  // Generate PDF for a specific bill
+  const handleGeneratePDF = (bill) => {
+    if (!bill.cartItems || bill.cartItems.length === 0) {
+      alert("No items in the cart to generate a PDF.");
+      return;
+    }
+
+    // Ensure all required fields are present
+    const isValid = bill.cartItems.every(
+      (item) =>
+        item.product &&
+        (item.pricePerKg || item.pricePerQuantity) &&
+        item.quantityWithUnit &&
+        item.totalPrice
+    );
+
+    if (!isValid) {
+      alert("Invalid cart items. Please check the data.");
+      return;
+    }
+
+    generatePDF(bill.cartItems, bill.totalAmount, shopName);
   };
 
   return (
@@ -42,11 +69,12 @@ const BillHistory = () => {
       <div className="max-w-screen-xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-6">Bill History</h1>
 
-        {/* Display Shop Name */}
+        {/* Shop Name */}
         <div className="mb-6 text-center">
           <h2 className="text-xl">Welcome to {shopName || "Your Shop"}</h2>
         </div>
 
+        {/* Bills Table */}
         {bills.length > 0 ? (
           <div className="overflow-x-auto shadow-lg rounded-lg">
             <table className="min-w-full bg-gray-800 text-white">
@@ -56,7 +84,6 @@ const BillHistory = () => {
                   <th className="px-6 py-3 text-left">Customer Number</th>
                   <th className="px-6 py-3 text-left">Total Amount</th>
                   <th className="px-6 py-3 text-left">Date</th>
-                  <th className="px-6 py-3 text-left">Items</th>
                   <th className="px-6 py-3 text-left">Actions</th>
                 </tr>
               </thead>
@@ -67,16 +94,6 @@ const BillHistory = () => {
                     <td className="px-6 py-3">{bill.customerNumber}</td>
                     <td className="px-6 py-3">₹{bill.totalAmount.toFixed(2)}</td>
                     <td className="px-6 py-3">{bill.date}</td>
-                    <td className="px-6 py-3">
-                      <ul className="list-disc pl-5">
-                        {bill.cartItems.map((item, i) => (
-                          <li key={i}>
-                            {item.product} - {item.quantityWithUnit} - ₹
-                            {item.totalPrice.toFixed(2)}
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
                     <td className="px-6 py-3 flex gap-2">
                       <button
                         onClick={() => toggleCartDetails(index)}
@@ -90,13 +107,19 @@ const BillHistory = () => {
                       >
                         Delete
                       </button>
+                      <button
+                        onClick={() => handleGeneratePDF(bill)}
+                        className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-600"
+                      >
+                        Create PDF
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            {/* Dropdown for showing cart data */}
+            {/* Cart Details Dropdown */}
             {expandedBillIndex !== null && (
               <div className="mt-4 p-4 bg-gray-800 rounded-lg">
                 <h3 className="text-xl font-semibold mb-4">Cart Details</h3>
